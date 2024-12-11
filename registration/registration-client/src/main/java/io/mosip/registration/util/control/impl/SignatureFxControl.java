@@ -34,7 +34,7 @@ public class SignatureFxControl extends FxControl {
     @Autowired
     private SignaturePopUpViewController signaturePopUpViewController;
 
-    public SignatureFxControl(){
+    public SignatureFxControl() {
         org.springframework.context.ApplicationContext applicationContext = ClientApplication.getApplicationContext();
         signaturePopUpViewController = applicationContext.getBean(SignaturePopUpViewController.class);
         auditFactory = applicationContext.getBean(AuditManagerService.class);
@@ -57,12 +57,12 @@ public class SignatureFxControl extends FxControl {
         signatureGridPane.setPrefWidth(200);
 
         signatureGridPane.add(create(uiFieldDTO), 0, 0);
-        signatureGridPane.add(createSignButton(uiFieldDTO), 0,1);
-        signatureGridPane.add(createPreview(uiFieldDTO),0,2);
+        signatureGridPane.add(createSignButton(uiFieldDTO), 0, 1);
+        signatureGridPane.add(createPreview(uiFieldDTO), 0, 2);
         signatureGridPane.add(createClearSignatureButton(uiFieldDTO), 1, 2);
 
         this.node = signatureGridPane;
-        setListener(getField(uiFieldDTO.getId()+RegistrationConstants.SIGNATURE));
+        setListener(getField(uiFieldDTO.getId() + RegistrationConstants.SIGNATURE));
         return this.control;
     }
 
@@ -81,20 +81,20 @@ public class SignatureFxControl extends FxControl {
     /**
      * show pop up screen for signing
      */
-    private void showSignaturePopUp(){
+    private void showSignaturePopUp() {
         signaturePopUpViewController.captureSignature(uiFieldDTO.getId(), this);
     }
 
     @Override
     public void setData(Object data) {
 
-        if(data != null){
+        if (data != null) {
             // set preview
-          ImageView preview = (ImageView) getField(uiFieldDTO.getId()+ RegistrationConstants.IMAGE_VIEW);
-          preview.setImage(DocScannerUtil.getImage((BufferedImage) data));
-          Button clear = (Button) getField(uiFieldDTO.getId()+RegistrationConstants.CLEAR);
-          clear.setVisible(true);
-        }else {
+            ImageView preview = (ImageView) getField(uiFieldDTO.getId() + RegistrationConstants.IMAGE_VIEW);
+            preview.setImage(DocScannerUtil.getImage((BufferedImage) data));
+            Button clear = (Button) getField(uiFieldDTO.getId() + RegistrationConstants.CLEAR);
+            clear.setVisible(true);
+        } else {
             signaturePopUpViewController.generateAlert(RegistrationConstants.ERROR,
                     "Unable to read signature image");
             return;
@@ -104,31 +104,33 @@ public class SignatureFxControl extends FxControl {
             // store data as image
             List<BufferedImage> bufferedImages = new ArrayList<BufferedImage>();
             bufferedImages.add((BufferedImage) data);
-            byte[] byteArray =DocScannerUtil.asImage(bufferedImages);
-            if(byteArray==null){
+            byte[] byteArray = DocScannerUtil.asImage(bufferedImages);
+            if (byteArray == null) {
                 signaturePopUpViewController.generateAlert(RegistrationConstants.ERROR, "Signature Storage Error");
                 return;
             }
-            int docSize = (int)Math.ceil(
+            int docSize = (int) Math.ceil(
                     Integer.parseInt(signaturePopUpViewController.getValueFromApplicationContext(
-                            RegistrationConstants.DOC_SIZE))/ (double)(1024*1024));
-            if(docSize <= (byteArray.length / (1024 * 1024))){
+                            RegistrationConstants.DOC_SIZE)) / (double) (1024 * 1024));
+            if (docSize <= (byteArray.length / (1024 * 1024))) {
                 bufferedImages.clear();
                 signaturePopUpViewController.generateAlert(RegistrationConstants.ERROR,
-                        RegistrationUIConstants.getMessageLanguageSpecific(RegistrationUIConstants.SCAN_DOC_SIZE).replace("1", Integer.toString(docSize)));
+                        RegistrationUIConstants.getMessageLanguageSpecific(RegistrationUIConstants.SCAN_DOC_SIZE)
+                                .replace("1", Integer.toString(docSize)));
                 return;
             }
             String signatureString = Base64.getEncoder().encodeToString(byteArray);
-            if (signatureString!=null) {
-                signatureString = "data:image/png;base64,"+signatureString;
+            if (signatureString != null) {
+                signatureString = "data:image/png;base64," + signatureString;
             }
             getRegistrationDTo().addDemographicField(uiFieldDTO.getId(), signatureString);
-            // DocumentDto documentDto = getRegistrationDTo().getDocuments().get(uiFieldDTO.getId());
+            // DocumentDto documentDto =
+            // getRegistrationDTo().getDocuments().get(uiFieldDTO.getId());
             // if(documentDto == null){
-            //     documentDto = new DocumentDto();
-            //     documentDto.setFormat("png");
-            //     documentDto.setCategory(uiFieldDTO.getSubType());
-            //     documentDto.setOwner(RegistrationConstants.APPLICANT);
+            // documentDto = new DocumentDto();
+            // documentDto.setFormat("png");
+            // documentDto.setCategory(uiFieldDTO.getSubType());
+            // documentDto.setOwner(RegistrationConstants.APPLICANT);
             // }
             // String type = "signature";
             // documentDto.setType(type);
@@ -143,7 +145,7 @@ public class SignatureFxControl extends FxControl {
     }
 
     public void clearData() {
-        getRegistrationDTo().removeDocument(uiFieldDTO.getId());
+        getRegistrationDTo().getDemographics().remove(uiFieldDTO.getId());
     }
 
     @Override
@@ -153,7 +155,7 @@ public class SignatureFxControl extends FxControl {
 
     @Override
     public Object getData() {
-        return getRegistrationDTo().getDocuments().get(uiFieldDTO.getId());
+        return getRegistrationDTo().getDemographics().get(uiFieldDTO.getId());
     }
 
     @Override
@@ -163,7 +165,7 @@ public class SignatureFxControl extends FxControl {
 
     @Override
     public boolean isValid() {
-        return getData()!=null;
+        return getData() != null;
     }
 
     @Override
@@ -171,13 +173,12 @@ public class SignatureFxControl extends FxControl {
         return !isValid();
     }
 
-
     @Override
     public List<GenericDto> getPossibleValues(String langCode) {
         return List.of();
     }
 
-    private VBox create(UiFieldDTO uiFieldDTO){
+    private VBox create(UiFieldDTO uiFieldDTO) {
         String fieldName = uiFieldDTO.getId();
         /** Container holds title, fields and validation message elements */
         VBox simpleTypeVBox = new VBox();
@@ -207,40 +208,37 @@ public class SignatureFxControl extends FxControl {
         return simpleTypeVBox;
     }
 
-    private Node createSignButton(UiFieldDTO uiFieldDTO){
-        Button signButton =  new Button();
+    private Node createSignButton(UiFieldDTO uiFieldDTO) {
+        Button signButton = new Button();
         signButton.setText(ApplicationContext.getBundle(null, RegistrationConstants.LABELS).getString(
-                RegistrationConstants.SIGN
-        ));
-        signButton.setId(uiFieldDTO.getId()+ RegistrationConstants.SIGNATURE);
+                RegistrationConstants.SIGN));
+        signButton.setId(uiFieldDTO.getId() + RegistrationConstants.SIGNATURE);
         signButton.getStyleClass().add(RegistrationConstants.DOCUMENT_CONTENT_BUTTON);
         signButton.setGraphic(new ImageView(
                 new Image(
                         this.getClass().getResourceAsStream(RegistrationConstants.IMG_SIGN),
-                        12, 12, true, true)
-        ));
+                        12, 12, true, true)));
         return signButton;
 
     }
 
-    private Node createClearSignatureButton(UiFieldDTO uiFieldDTO){
+    private Node createClearSignatureButton(UiFieldDTO uiFieldDTO) {
         Button clearButton = new Button();
-        clearButton.setText(ApplicationContext.getBundle(null, RegistrationConstants.LABELS).getString(RegistrationConstants.CLEAR));
+        clearButton.setText(ApplicationContext.getBundle(null, RegistrationConstants.LABELS)
+                .getString(RegistrationConstants.CLEAR));
         clearButton.setVisible(false);
-        clearButton.setId(uiFieldDTO.getId()+RegistrationConstants.CLEAR);
+        clearButton.setId(uiFieldDTO.getId() + RegistrationConstants.CLEAR);
         clearButton.setGraphic(new ImageView(
                 new Image(
                         this.getClass().getResourceAsStream(RegistrationConstants.IMG_CLEAR_SIGNATURE),
-                        12,12,true, true
-                )
-        ));
+                        12, 12, true, true)));
 
         clearButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 clearSignature();
-                getField(uiFieldDTO.getId()+RegistrationConstants.CLEAR).setVisible(false);
-                getField(uiFieldDTO.getId()+ RegistrationConstants.SIGNATURE).setDisable(false);
+                getField(uiFieldDTO.getId() + RegistrationConstants.CLEAR).setVisible(false);
+                getField(uiFieldDTO.getId() + RegistrationConstants.SIGNATURE).setDisable(false);
             }
         });
         return clearButton;
@@ -248,13 +246,13 @@ public class SignatureFxControl extends FxControl {
 
     private void clearSignature() {
         LOGGER.info("..... Clearing signature .....");
-        ((ImageView)getField(uiFieldDTO.getId()+ RegistrationConstants.IMAGE_VIEW)).setImage(null);
+        ((ImageView) getField(uiFieldDTO.getId() + RegistrationConstants.IMAGE_VIEW)).setImage(null);
         clearData();
     }
 
-    private Node createPreview(UiFieldDTO uiFieldDTO){
+    private Node createPreview(UiFieldDTO uiFieldDTO) {
         ImageView imageView = new ImageView();
-        imageView.setId(uiFieldDTO.getId()+ RegistrationConstants.IMAGE_VIEW);
+        imageView.setId(uiFieldDTO.getId() + RegistrationConstants.IMAGE_VIEW);
         return imageView;
     }
 }
