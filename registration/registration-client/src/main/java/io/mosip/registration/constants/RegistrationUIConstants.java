@@ -429,4 +429,6 @@ public class RegistrationUIConstants {
 
 	public static final String INVALID_FLOW_TYPE = "INVALID_FLOW_TYPE";
 	public static final String ADDITIONAL_INFO_REQ_ID_MISSING = "ADDITIONAL_INFO_REQ_ID_MISSING";
+
+	public static final String SAVE_SIGNATURE_ERROR = "SAVE_SIGNATURE_ERROR";
 }

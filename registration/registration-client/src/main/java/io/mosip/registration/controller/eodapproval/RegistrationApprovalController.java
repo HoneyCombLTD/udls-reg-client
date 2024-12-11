@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
+import io.mosip.registration.util.advice.AuthenticationAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -85,7 +86,7 @@ public class RegistrationApprovalController extends BaseController implements In
 	/** object for Registration approval service class. */
 
 	@Autowired
-	private RegistrationApprovalService registration;
+	public RegistrationApprovalService registration;
 
 	/** Table to display the created packets. */
 
@@ -335,9 +336,10 @@ public class RegistrationApprovalController extends BaseController implements In
 			}
 
 			webView.getEngine().loadContent(RegistrationConstants.EMPTY);
-
-			approvalBtn.setVisible(true);
-			rejectionBtn.setVisible(true);
+			if (SessionContext.userContext().getRoles().contains(AuthenticationAdvice.SUPERVISOR_ROLE)){
+				approvalBtn.setVisible(true);
+				rejectionBtn.setVisible(true);
+			}
 			imageAnchorPane.setVisible(true);
 
 			try{
@@ -731,5 +733,9 @@ public class RegistrationApprovalController extends BaseController implements In
 				.ofPattern(RegistrationConstants.EOD_PROCESS_DATE_FORMAT_FOR_FILE);
 		return LocalDateTime.now().format(format);
 	}
+
+	public RegistrationApprovalService getRegistrationApprovalService(){
+		return registrationApprovalService;
+	};
 
 }

@@ -1992,4 +1992,33 @@ public class RegistrationConstants {
 	public static final String APPLICANT_TYPE_MVEL_SCRIPT = "mosip.kernel.applicantType.mvel.file";
 	public static final String FIELDS_TO_RETAIN_ON_PRID_FETCH = "mosip.registration.fields.to.retain.post.prid.fetch";
 	public static final String IMAGING_DEVICE_TYPE = "mosip.registration.imagingDeviceType";
+
+	public static final String RES_IMG_BTN_CANCEL_BW = "btn_cancel_sigma.png";
+
+	public static final String RES_IMG_BTN_OK_BW = "btn_ok_sigma.png";
+
+	public static final String IMG_SIGN = "/images/signature-with-a-pen.png";
+	public static final String IMG_CLEAR_SIGNATURE = "/images/"+CROSS_IMG;
+	public static final String SIGN = "sign";
+	public static final String CLEAR = "clear_signature";
+
+
+	public static final String RES_IMG_LOGO_ALPHA = "logo_alpha.png";
+	public static final String RES_IMG_LOGO_PENDISPLAY = "logo_pendisplay.png";
+
+	public static final String RES_IMG_SIGNATURE_SIGMA = "signature_sigma.png";
+
+	public static final String RES_IMG_DEVICE_SIGMA = "device_sigma.png";
+	public static final String RES_IMG_DEVICE_ZETA = "device_zeta.png";
+	public static final String RES_IMG_DEVICE_OMEGA = "device_omega.png";
+	public static final String RES_IMG_DEVICE_GAMMA = "device_gamma.png";
+	public static final String RES_IMG_DEVICE_DELTA = "device_delta.png";
+	public static final String RES_IMG_DEVICE_ALPHA = "device_alpha.png";
+
+	public static final String RES_IMG_LOGO_SIGMA = "logo_sigma.png";
+	public static final String SIGN_PAGE = "/fxml/Sign.fxml";
+
+	public static final String VERIFY_PRN = "verify_prn";
+	public static final String PRN_INPUT = "prn_input";
+	public static final String PRN_PREVIEW = "prn_preview";
 }

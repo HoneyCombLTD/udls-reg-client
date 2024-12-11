@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import io.mosip.registration.util.control.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,15 +46,6 @@ import io.mosip.registration.exception.RegBaseCheckedException;
 import io.mosip.registration.exception.RegistrationExceptionConstants;
 import io.mosip.registration.service.sync.PreRegistrationDataSyncService;
 import io.mosip.registration.util.control.FxControl;
-import io.mosip.registration.util.control.impl.BiometricFxControl;
-import io.mosip.registration.util.control.impl.ButtonFxControl;
-import io.mosip.registration.util.control.impl.CheckBoxFxControl;
-import io.mosip.registration.util.control.impl.DOBAgeFxControl;
-import io.mosip.registration.util.control.impl.DOBFxControl;
-import io.mosip.registration.util.control.impl.DocumentFxControl;
-import io.mosip.registration.util.control.impl.DropDownFxControl;
-import io.mosip.registration.util.control.impl.HtmlFxControl;
-import io.mosip.registration.util.control.impl.TextFieldFxControl;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -110,6 +102,8 @@ public class GenericController extends BaseController {
 	private static final String CONTROLTYPE_DOB = "date";
 	private static final String CONTROLTYPE_DOB_AGE = "ageDate";
 	private static final String CONTROLTYPE_HTML = "html";
+	private static final String CONTROLTYPE_SIGNATURE =  "signature";
+	private static final String CONTROLTYPE_PRN_CHECK = "prn-input";
 
 	/**
 	 * Top most Grid pane in FXML
@@ -131,7 +125,7 @@ public class GenericController extends BaseController {
 
 	@FXML
 	private Label notification;
-	
+
 	private ProgressIndicator progressIndicator;
 
 	@Autowired
@@ -148,7 +142,7 @@ public class GenericController extends BaseController {
 
 	@Autowired
 	private PreRegistrationDataSyncService preRegistrationDataSyncService;
-	
+
 	private static TreeMap<Integer, UiScreenDTO> orderedScreens = new TreeMap<>();
 	private static Map<String, FxControl> fxControlMap = new HashMap<String, FxControl>();
 	private Stage keyboardStage;
@@ -162,11 +156,11 @@ public class GenericController extends BaseController {
 	public static Map<String, FxControl> getFxControlMap() {
 		return fxControlMap;
 	}
-	
+
 	public void disableAuthenticateButton(boolean disable) {
 		authenticate.setDisable(disable);
 	}
-	
+
 	private void initialize(RegistrationDTO registrationDTO) {
 		orderedScreens.clear();
 		fxControlMap.clear();
@@ -238,7 +232,7 @@ public class GenericController extends BaseController {
 				return new Task<Void>() {
 					/*
 					 * (non-Javadoc)
-					 * 
+					 *
 					 * @see javafx.concurrent.Task#call()
 					 */
 					@Override
@@ -254,16 +248,16 @@ public class GenericController extends BaseController {
 								return;
 							}
 							ResponseDTO responseDTO = preRegistrationDataSyncService.getPreRegistration(textField.getText(), false);
-							
+
 							if (responseDTO.getErrorResponseDTOs() != null
 									&& !responseDTO.getErrorResponseDTOs().isEmpty()
 									&& responseDTO.getErrorResponseDTOs().get(0).getMessage() != null
 									&& responseDTO.getErrorResponseDTOs().get(0).getMessage()
-											.equalsIgnoreCase(RegistrationConstants.CONSUMED_PRID_ERROR_CODE)) {
+									.equalsIgnoreCase(RegistrationConstants.CONSUMED_PRID_ERROR_CODE)) {
 								generateAlertLanguageSpecific(RegistrationConstants.ERROR, RegistrationConstants.PRE_REG_CONSUMED_PACKET_ERROR);
 								return;
 							}
-							
+
 							try {
 								loadPreRegSync(responseDTO);
 								if (responseDTO.getSuccessResponseDTO() != null) {
@@ -354,13 +348,13 @@ public class GenericController extends BaseController {
 	private void loadPreRegSync(ResponseDTO responseDTO) throws RegBaseCheckedException{
 		auditFactory.audit(AuditEvent.REG_DEMO_PRE_REG_DATA_FETCH, Components.REG_DEMO_DETAILS, SessionContext.userId(),
 				AuditReferenceIdTypes.USER_ID.getReferenceTypeId());
-		
+
 		SuccessResponseDTO successResponseDTO = responseDTO.getSuccessResponseDTO();
 		List<ErrorResponseDTO> errorResponseDTOList = responseDTO.getErrorResponseDTOs();
 
-		if (errorResponseDTOList != null && !errorResponseDTOList.isEmpty() || 
-				successResponseDTO==null || 
-				successResponseDTO.getOtherAttributes() == null || 
+		if (errorResponseDTOList != null && !errorResponseDTOList.isEmpty() ||
+				successResponseDTO==null ||
+				successResponseDTO.getOtherAttributes() == null ||
 				!successResponseDTO.getOtherAttributes().containsKey(RegistrationConstants.REGISTRATION_DTO)) {
 			throw new RegBaseCheckedException(RegistrationExceptionConstants.PRE_REG_SYNC_FAIL.getErrorCode(),
 					RegistrationExceptionConstants.PRE_REG_SYNC_FAIL.getErrorMessage());
@@ -410,15 +404,15 @@ public class GenericController extends BaseController {
 		}
 
 		screenFields.forEach( field -> {
-				String alignmentGroup = field.getAlignmentGroup() == null ? field.getId()+"TemplateGroup"
-						: field.getAlignmentGroup();
+			String alignmentGroup = field.getAlignmentGroup() == null ? field.getId()+"TemplateGroup"
+					: field.getAlignmentGroup();
 
-				if(field.isInputRequired()) {
-					if(!groupedScreenFields.containsKey(alignmentGroup))
-						groupedScreenFields.put(alignmentGroup, new LinkedList<UiFieldDTO>());
+			if(field.isInputRequired()) {
+				if(!groupedScreenFields.containsKey(alignmentGroup))
+					groupedScreenFields.put(alignmentGroup, new LinkedList<UiFieldDTO>());
 
-					groupedScreenFields.get(alignmentGroup).add(field);
-				}
+				groupedScreenFields.get(alignmentGroup).add(field);
+			}
 		});
 		return groupedScreenFields;
 	}
@@ -546,7 +540,7 @@ public class GenericController extends BaseController {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				LOGGER.debug("Old selection : {} New Selection : {}", oldValue, newValue);
-				
+
 				if (isKeyboardVisible() && keyboardStage != null) {
 					keyboardStage.close();
 				}
@@ -610,15 +604,15 @@ public class GenericController extends BaseController {
 	private int getNextSelection(TabPane tabPane, int oldSelection, int newSelection) {
 		if (newSelection-oldSelection <= 1) {
 			return newSelection;
-		} 
+		}
 		for (int i = oldSelection + 1; i < newSelection; i++) {
 			if (!tabPane.getTabs().get(i).isDisabled()) {
 				return oldSelection;
 			}
-		}		
+		}
 		return newSelection;
 	}
-	
+
 	private boolean isScreenValid(final String screenName) {
 		Optional<UiScreenDTO> result = orderedScreens.values()
 				.stream().filter(screen -> screen.getName().equals(screenName.replace("_tab", EMPTY))).findFirst();
@@ -720,10 +714,10 @@ public class GenericController extends BaseController {
 			});
 
 			String tabNameInApplicationLanguage = screenDTO.getLabel().get(getRegistrationDTOFromSession().getSelectedLanguagesByApplicant().get(0));
-			
+
 			if(screenFieldGroups == null || screenFieldGroups.isEmpty())
 				continue;
-			
+
 			Tab screenTab = new Tab();
 			screenTab.setId(screenDTO.getName()+"_tab");
 			screenTab.setText(tabNameInApplicationLanguage == null ?
@@ -789,7 +783,7 @@ public class GenericController extends BaseController {
 			authLabels.add(ApplicationContext.getBundle(langCode, RegistrationConstants.LABELS)
 					.getString(RegistrationConstants.authentication));
 		}
-		
+
 		String langCode = getRegistrationDTOFromSession().getSelectedLanguagesByApplicant().get(0);
 
 		Tab previewScreen = new Tab();
@@ -910,6 +904,13 @@ public class GenericController extends BaseController {
 				case CONTROLTYPE_HTML:
 					fxControl = new HtmlFxControl().build(uiFieldDTO);
 					break;
+
+				case CONTROLTYPE_SIGNATURE:
+					fxControl = new SignatureFxControl().build(uiFieldDTO);
+					break;
+				case CONTROLTYPE_PRN_CHECK:
+					fxControl = new PRNStatusInputFxControl().build(uiFieldDTO);
+					break;
 			}
 		}
 
@@ -932,11 +933,11 @@ public class GenericController extends BaseController {
 	private FxControl getFxControl(String fieldId) {
 		return GenericController.getFxControlMap().get(fieldId);
 	}
-	
-	public Stage getKeyboardStage() {		
+
+	public Stage getKeyboardStage() {
 		return keyboardStage;
 	}
-	
+
 	public void setKeyboardStage(Stage keyboardStage) {
 		this.keyboardStage = keyboardStage;
 	}
@@ -956,7 +957,7 @@ public class GenericController extends BaseController {
 	public void setPreviousId(String previousId) {
 		this.previousId = previousId;
 	}
-	
+
 	public String getCurrentScreenName() {
 		TabPane tabPane = (TabPane) anchorPane.lookup(HASH + getRegistrationDTOFromSession().getRegistrationId());
 		return tabPane.getSelectionModel().getSelectedItem().getId().replace("_tab", EMPTY);

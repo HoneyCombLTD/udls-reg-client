@@ -153,7 +153,7 @@ public class TextFieldFxControl extends FxControl {
 		});
 	}
 
-	private VBox create(UiFieldDTO uiFieldDTO) {
+	public VBox create(UiFieldDTO uiFieldDTO) {
 		String fieldName = uiFieldDTO.getId();
 
 		/** Container holds title, fields and validation message elements */

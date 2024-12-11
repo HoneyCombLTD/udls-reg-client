@@ -8,6 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import com.techno.regclient.ClientServer;
+import io.mosip.registration.controller.eodapproval.RegistrationApprovalController;
+import io.mosip.registration.service.packet.RegistrationApprovalService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -103,6 +106,12 @@ public class ClientApplication extends Application {
 			handleInitialSync();
 			discoverDevices();
 
+			notifyPreloader(new ClientPreLoaderNotification("Starting Socket Server ..."));
+			try {
+				ClientServer.StartServer(null, null);
+			}catch (Exception ex){
+				notifyPreloader(new ClientPreLoaderErrorNotification(ex));
+			}
 		} catch (Throwable t) {
 			ClientPreLoader.errorsFound = true;
 			LOGGER.error("Application Initialization Error", t);

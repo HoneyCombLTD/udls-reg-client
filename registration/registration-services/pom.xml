@@ -512,6 +512,11 @@
 			<artifactId>mockwebserver</artifactId>
 			<version>3.14.4</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.mock.sdk</groupId>
+			<artifactId>mock-sdk</artifactId>
+			<version>1.2.0.1-B3</version>
+		</dependency>
 	</dependencies>
 	<!--<repositories> <repository> <id>local-maven-repo</id> <url>file:///${basedir}/lib</url>
 		</repository> </repositories> -->
