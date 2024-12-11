@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class SignatureFxControl extends FxControl {
@@ -117,19 +118,24 @@ public class SignatureFxControl extends FxControl {
                         RegistrationUIConstants.getMessageLanguageSpecific(RegistrationUIConstants.SCAN_DOC_SIZE).replace("1", Integer.toString(docSize)));
                 return;
             }
-            DocumentDto documentDto = getRegistrationDTo().getDocuments().get(uiFieldDTO.getId());
-            if(documentDto == null){
-                documentDto = new DocumentDto();
-                documentDto.setFormat("png");
-                documentDto.setCategory(uiFieldDTO.getSubType());
-                documentDto.setOwner(RegistrationConstants.APPLICANT);
+            String signatureString = Base64.getEncoder().encodeToString(byteArray);
+            if (signatureString!=null) {
+                signatureString = "data:image/png;base64,"+signatureString;
             }
-            String type = "signature";
-            documentDto.setType(type);
-            documentDto.setValue(uiFieldDTO.getSubType().concat(RegistrationConstants.UNDER_SCORE).concat(type));
-            documentDto.setDocument(byteArray);
-            documentDto.setRefNumber("resident signature");
-            getRegistrationDTo().addDocument(uiFieldDTO.getId(), documentDto);
+            getRegistrationDTo().addDemographicField(uiFieldDTO.getId(), signatureString);
+            // DocumentDto documentDto = getRegistrationDTo().getDocuments().get(uiFieldDTO.getId());
+            // if(documentDto == null){
+            //     documentDto = new DocumentDto();
+            //     documentDto.setFormat("png");
+            //     documentDto.setCategory(uiFieldDTO.getSubType());
+            //     documentDto.setOwner(RegistrationConstants.APPLICANT);
+            // }
+            // String type = "signature";
+            // documentDto.setType(type);
+            // documentDto.setValue(uiFieldDTO.getSubType().concat(RegistrationConstants.UNDER_SCORE).concat(type));
+            // documentDto.setDocument(byteArray);
+            // documentDto.setRefNumber("resident signature");
+            // getRegistrationDTo().addDocument(uiFieldDTO.getId(), documentDto);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
