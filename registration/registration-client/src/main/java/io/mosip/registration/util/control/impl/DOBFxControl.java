@@ -185,9 +185,9 @@ public class DOBFxControl extends FxControl {
 					textField.getId().replaceAll(RegistrationConstants.TEXT_FIELD, "") + RegistrationConstants.LABEL,
 					!textField.getText().isEmpty());
 
-			if (!dateValidation.isNewValueValid(nv, dateType)) {
-				textField.setText(ov);
-			}
+//			if (!dateValidation.isNewValueValid(nv, dateType)) {
+//				textField.setText(ov);
+//			}
 			boolean isValid = dateValidation.validateDateWithMaxAndMinDays((Pane) getNode(), uiFieldDTO.getId(),
 					getUiSchemaDTO().getMinimum(), getUiSchemaDTO().getMaximum());
 			if (isValid) {

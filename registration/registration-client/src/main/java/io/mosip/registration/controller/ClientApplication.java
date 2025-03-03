@@ -107,11 +107,11 @@ public class ClientApplication extends Application {
 			discoverDevices();
 
 			notifyPreloader(new ClientPreLoaderNotification("Starting Socket Server ..."));
-			try {
-				ClientServer.StartServer(null, null);
-			}catch (Exception ex){
-				notifyPreloader(new ClientPreLoaderErrorNotification(ex));
-			}
+//			try {
+//				ClientServer.StartServer(null, null);
+//			}catch (Exception ex){
+//				notifyPreloader(new ClientPreLoaderErrorNotification(ex));
+//			}
 		} catch (Throwable t) {
 			ClientPreLoader.errorsFound = true;
 			LOGGER.error("Application Initialization Error", t);
